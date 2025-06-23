@@ -1,5 +1,4 @@
 cv
 numpy
-os
 utils
 mtcnn
