@@ -1,5 +1,4 @@
 import streamlit as st
-import geocoder 
 
 def get_ip():
     
