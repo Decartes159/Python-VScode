@@ -1,4 +1,4 @@
-cv
+opencv
 numpy
 utils
 mtcnn
