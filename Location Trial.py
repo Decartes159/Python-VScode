@@ -3,6 +3,6 @@ import streamlit as st
 def get_ip():
     
     ip = st.context.ip_address
-    return ip
+    st.write(ip)
 st.title("IP")
-st.write(get_ip())
+get_ip()
