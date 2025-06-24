@@ -4,4 +4,3 @@ streamlit-webrtc
 pandas
 datetime
 geocoder
-geopy
