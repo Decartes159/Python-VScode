@@ -3,8 +3,10 @@ import pandas as pd
 import os
 import datetime
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase, RTCConfiguration
+import streamlit.components.v1 as components
 import av
-import geocoder
+import geocoder 
+from geopy.distance import geodesic
 
 CREDENTIALS = {
     "student1": {"password": "studpass1", "role": "Student"},
@@ -109,6 +111,13 @@ def lecturer_page():
         else:
             st.warning("No attendance records for this class yet.")
 
+# helper function to calculate distance
+def calculate_distance(user_loc, target_loc):
+    """Calculates distance in meters between two lat/lon points."""
+    if user_loc and target_loc:
+        return geodesic(user_loc, target_loc).meters
+    return float('inf') # Return a very large number if a location is missing
+
 # save to csv file
 def save_attendance(username, selected_class):
     class_code = selected_class.split()[0]
@@ -135,45 +144,65 @@ def verify_page():
     st.title("Attendance Process")
     st.divider()
 
+    # --- Initialize session state variables ---
+    if 'face_verified' not in st.session_state:
+        st.session_state['face_verified'] = False # You will need to set this to True from your face_verification_page
+    if 'location_verified' not in st.session_state:
+        st.session_state['location_verified'] = False
+
     selected_class = st.session_state.get("selected_class", "N/A")
     st.markdown(f"Class: **{selected_class}**")
 
+    # --- Step 1: Face Verification ---
     st.subheader("Step 1: Face Verification")
-
     if st.button("Begin Face Verification"):
         st.session_state.page = "face_verification"
         st.rerun()
 
+    # --- Step 2: Location Verification ---
     st.subheader("Step 2: Location Verification")
-    try:
-        ip_address = st.context.ip_address
-        st.write(f"Your IP address is: {ip_address}")
-    except Exception as e:
-        st.write("Could not retrieve IP address.")
-        st.error(e) 
+    st.warning(
+        "**Disclaimer:** This method uses IP Geolocation. It checks the city of your "
+        "Internet provider, which may be many kilometers away from your actual physical location. "
+        "It is not accurate enough to verify if you are on campus."
+    )
     
-    
-    
-    st.info("Logic here (geocoder, etc)")
+    if st.button("Verify My Location (IP Based)"):
+        with st.spinner("Getting location based on IP..."):
+            g = geocoder.ip('me')
+
+            if g.ok:
+                user_location = g.latlng  
+                TARGET_LOCATION = (2.8252, 101.7119)
+                ALLOWED_DISTANCE_METERS = 5000  # Increased to 5km due to inaccuracy
+
+                distance = calculate_distance(user_location, TARGET_LOCATION)
+
+                if distance <= ALLOWED_DISTANCE_METERS:
+                    st.session_state['location_verified'] = True
+                    st.success(f"Location Verified! Your IP resolves to within {ALLOWED_DISTANCE_METERS / 1000}km of the target.")
+                    st.write(f"Approximate Location: {g.city}, {g.country}")
+                else:
+                    st.session_state['location_verified'] = False
+                    st.error(f"Location Check Failed. Your IP resolves to a location too far from the target.")
+            else:
+                st.error("Could not determine location from IP address. Please try again.")
 
     st.divider()
     st.markdown("### Verification Checklist")
 
-    # use real logic later
-    face_verified = True
-    location_verified = True
+    st.checkbox("Face Verified", value=st.session_state.get('face_verified', False), disabled=True)
+    st.checkbox("Location Verified", value=st.session_state.get('location_verified', False), disabled=True)
 
-    st.checkbox("Face Verified", value=face_verified, disabled=True)
-    st.checkbox("Location Verified", value=location_verified, disabled=True)
-
-    if face_verified and location_verified:
+    if st.session_state.get('face_verified') and st.session_state.get('location_verified'):
         if st.button("Submit Attendance"):
             save_attendance(
                 username=st.session_state.get("username", "Unknown"),
                 selected_class=st.session_state.get("selected_class", "Unknown"),
             )
             st.session_state.attendance_submitted = True
-            st.success("All checks passed. Attendance recorded!")
+            st.session_state.face_verified = False
+            st.session_state.location_verified = False
             st.session_state.page = "student"
             st.rerun()
     else:
