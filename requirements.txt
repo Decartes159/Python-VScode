@@ -1,6 +1,6 @@
 opencv-python-headless
 numpy
-streamlit-webtrc
+streamlit-webrtc
 pandas
 datetime
 geocoder
