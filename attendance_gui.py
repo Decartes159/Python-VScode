@@ -208,16 +208,7 @@ def face_verification_page():
     )
     
     st.divider()
-
-    st.info("Please allow camera access to capture your face.")
-
-    picture = st.camera_input("Take a photo")
-
-    if picture:
-        st.success("Photo captured! (face recognition code here)")
-        # Optional: Save or process the photo here
-
-    st.divider()
+    
     if st.button("Return to Verification"):
         st.session_state.page = "verify"
         st.rerun()
