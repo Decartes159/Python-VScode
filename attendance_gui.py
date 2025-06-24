@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 import datetime
-from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
+from streamlit_webrtc import webrtc_streamer, VideoTransformerBase, RTCConfiguration
 import av
 import geocoder
 
@@ -188,6 +188,10 @@ def face_verification_page():
     st.markdown("Please capture your face for verification.")
     
     #######
+    RTC_CONFIGURATION = RTCConfiguration(
+        {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+    )
+
     class VideoTransformer(VideoTransformerBase):
         def transform(self, frame):
             # Convert the frame to a numpy array
@@ -202,13 +206,12 @@ def face_verification_page():
     webrtc_streamer(
         key="example",
         video_transformer_factory=VideoTransformer,
-        rtc_configuration={  # This is needed for deployment on Streamlit Cloud
-        "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
-        }
+        rtc_configuration=RTC_CONFIGURATION, # Add this config
+        media_stream_constraints={"video": True, "audio": False} # Specify you only want video
     )
     
     st.divider()
-    
+
     if st.button("Return to Verification"):
         st.session_state.page = "verify"
         st.rerun()
