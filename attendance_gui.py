@@ -184,7 +184,7 @@ def verify_page():
                     st.write(f"Approximate Location: {g.city}, {g.country}")
                 else:
                     st.session_state['location_verified'] = False
-                    st.error(f"Location Check Failed. Your IP resolves to a location too far from the target.")
+                    st.error(f"Your location is:{user_location}.Location Check Failed. Your IP resolves to a location too far from the target.")
             else:
                 st.error("Could not determine location from IP address. Please try again.")
 
