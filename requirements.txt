@@ -1,4 +1,5 @@
 opencv-python-headless
 numpy
 utils
-mtcnn
+mtcnn  
+streamlit-webtrc
