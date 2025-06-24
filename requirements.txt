@@ -1,5 +1,6 @@
 opencv-python-headless
 numpy
-utils
-mtcnn  
-streamlit-webtrc
+streamlit-webrtc
+pandas
+datetime
+geocoder
