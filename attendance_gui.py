@@ -173,7 +173,7 @@ def verify_page():
 
             if g.ok:
                 user_location = g.latlng  
-                TARGET_LOCATION = (2.8252, 101.7119)
+                TARGET_LOCATION = (2.8327, 101.7032)
                 ALLOWED_DISTANCE_METERS = 5000  # Increased to 5km due to inaccuracy
 
                 distance = calculate_distance(user_location, TARGET_LOCATION)
