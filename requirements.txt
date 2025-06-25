@@ -8,4 +8,5 @@ geopy
 utils
 scikit-learn
 joblib
-opencv-python
+opencv-python-headless
+
