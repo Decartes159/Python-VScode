@@ -218,7 +218,7 @@ def face_verification_page():
     
     #######
     RTC_CONFIGURATION = RTCConfiguration(
-        {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+        {"iceServers": [{"urls": ["relay1.expressturn.com:3480"]}]}
     )
 
     class VideoTransformer(VideoTransformerBase):
