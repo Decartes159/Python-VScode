@@ -187,9 +187,6 @@ def verify_page():
     st.warning(
         "Please ensure you are on campus and have enabled location services in your browser."
     )
-    location = st.session_state.get('location', None)
-    if 'location_verified' in st.session_state and st.session_state['location_verified']:
-        st.success("Location already verified.")
     if st.button("Verify My Location"):
         location = streamlit_geolocation() # This widget will ask for permission
 
