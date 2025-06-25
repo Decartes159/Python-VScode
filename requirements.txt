@@ -6,5 +6,5 @@ geocoder
 geopy   
 scikit-learn
 joblib
-tensorflow
+tensorflow-cpu
 
