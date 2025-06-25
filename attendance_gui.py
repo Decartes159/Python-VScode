@@ -194,7 +194,7 @@ def verify_page():
         st.write(f"Your coordinates are {location['latitude']}, {location['longitude']}")
         user_location = (location['latitude'], location['longitude'])
         TARGET_LOCATION = (2.830973,101.703846) # XMUM Campus A3
-        ALLOWED_DISTANCE_METERS = 500 # Can be much smaller now!
+        ALLOWED_DISTANCE_METERS = 1000 # Can be much smaller now!
         distance = calculate_distance(user_location, TARGET_LOCATION)
         if distance <= ALLOWED_DISTANCE_METERS:
             st.success("Location Verified! You are on campus.")
