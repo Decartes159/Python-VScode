@@ -14,7 +14,7 @@ from PIL import Image
 import joblib
 
 CREDENTIALS = {
-    "Josiah": {"password": "Josiah1", "role": "Student"},
+    "person10": {"password": "Josiah1", "role": "Student"},
     "Bethany": {"password": "Bethany1", "role": "Student"},
     "Huiming": {"password": "Huiming1", "role": "Student"},
     "Hongshen": {"password": "Hongshen1", "role": "Student"},
