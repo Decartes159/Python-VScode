@@ -191,10 +191,10 @@ def verify_page():
     if st.button("Verify My Location"):
         location = streamlit_geolocation() # This widget will ask for permission
 
-    if location:
+    if location and 'latitude' in location and 'longitude' in location:
         st.write(f"Your coordinates are {location['latitude']}, {location['longitude']}")
         user_location = (location['latitude'], location['longitude'])
-        TARGET_LOCATION = (2.830973,101.703846) # XMUM Campus
+        TARGET_LOCATION = (2.830973,101.703846) # XMUM Campus A3
         ALLOWED_DISTANCE_METERS = 500 # Can be much smaller now!
         distance = calculate_distance(user_location, TARGET_LOCATION)
         if distance <= ALLOWED_DISTANCE_METERS:
@@ -202,6 +202,8 @@ def verify_page():
             st.session_state['location_verified'] = True
         else:
             st.error(f"Location Check Failed. You are {distance:.2f} meters away from campus.")
+    else:
+        st.error("Location verification failed. Please ensure you have allowed location access in your browser settings.")
 ##########
     st.divider()
     st.markdown("### Verification Checklist")
