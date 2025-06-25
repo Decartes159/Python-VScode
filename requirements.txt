@@ -6,3 +6,6 @@ datetime
 geocoder
 geopy
 utils
+scikit-learn
+joblib
+opencv-python
