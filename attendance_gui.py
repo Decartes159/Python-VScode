@@ -190,7 +190,8 @@ def verify_page():
     
     if st.button("Verify My Location"):
         location = streamlit_geolocation() # This widget will ask for permission
-
+        st.write("Location data received:", location)
+        
     if location and 'latitude' in location and 'longitude' in location:
         st.write(f"Your coordinates are {location['latitude']}, {location['longitude']}")
         user_location = (location['latitude'], location['longitude'])
