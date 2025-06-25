@@ -12,7 +12,7 @@ import numpy as np
 from utils import load_facenet_model, get_embedding
 from PIL import Image
 import joblib
-
+from streamlit_geolocation import streamlit_geolocation
 CREDENTIALS = {
     "Josiah": {"password": "Josiah1", "role": "Student"},
     "Bethany": {"password": "Bethany1", "role": "Student"},
@@ -194,27 +194,24 @@ def verify_page():
         "It is not accurate enough to verify if you are on campus."
     )
     
-    if st.button("Verify My Location (IP Based)"):
-        with st.spinner("Getting location based on IP..."):
-            g = geocoder.ip('me')
+    if st.button("Verify My Location"):
+        st.subheader("Step 2: Location Verification")
+        location = streamlit_geolocation() # This widget will ask for permission
 
-            if g.ok:
-                user_location = g.latlng  
-                TARGET_LOCATION = (2.8327, 101.7032)
-                ALLOWED_DISTANCE_METERS = 5000  # Increased to 5km due to inaccuracy
+        if location:
+            st.write(f"Your coordinates are {location['latitude']}, {location['longitude']}")
+            user_location = (location['latitude'], location['longitude'])
+            TARGET_LOCATION = (2.8327, 101.7032) # XMUM Campus
+            ALLOWED_DISTANCE_METERS = 200 # Can be much smaller now!
 
-                distance = calculate_distance(user_location, TARGET_LOCATION)
+    distance = calculate_distance(user_location, TARGET_LOCATION)
 
-                if distance <= ALLOWED_DISTANCE_METERS:
-                    st.session_state['location_verified'] = True
-                    st.success(f"Location Verified! Your IP resolves to within {ALLOWED_DISTANCE_METERS / 1000}km of the target.")
-                    st.write(f"Approximate Location: {g.city}, {g.country}")
-                else:
-                    st.session_state['location_verified'] = False
-                    st.error(f"Your location is:{user_location}.Location Check Failed. Your IP resolves to a location too far from the target.")
-            else:
-                st.error("Could not determine location from IP address. Please try again.")
-
+    if distance <= ALLOWED_DISTANCE_METERS:
+        st.success("Location Verified! You are on campus.")
+        st.session_state['location_verified'] = True
+    else:
+        st.error(f"Location Check Failed. You are {distance:.2f} meters away from campus.")
+##########
     st.divider()
     st.markdown("### Verification Checklist")
 
