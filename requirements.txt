@@ -1,8 +1,6 @@
 opencv-python-headless
 numpy
-streamlit-webrtc
 pandas
-geocoder
 geopy   
 scikit-learn
 joblib

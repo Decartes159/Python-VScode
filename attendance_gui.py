@@ -2,10 +2,6 @@ import streamlit as st
 import pandas as pd
 import os
 import datetime
-from streamlit_webrtc import webrtc_streamer, VideoTransformerBase, RTCConfiguration
-import streamlit.components.v1 as components
-import av
-import geocoder 
 from geopy.distance import geodesic
 import cv2
 import numpy as np
@@ -198,8 +194,8 @@ def verify_page():
         if location:
             st.write(f"Your coordinates are {location['latitude']}, {location['longitude']}")
             user_location = (location['latitude'], location['longitude'])
-            TARGET_LOCATION = (2.8327, 101.7032) # XMUM Campus
-            ALLOWED_DISTANCE_METERS = 200 # Can be much smaller now!
+            TARGET_LOCATION = (2.830973,101.703846) # XMUM Campus
+            ALLOWED_DISTANCE_METERS = 500 # Can be much smaller now!
 
     distance = calculate_distance(user_location, TARGET_LOCATION)
 
