@@ -7,7 +7,7 @@ import streamlit.components.v1 as components
 import av
 import geocoder 
 from geopy.distance import geodesic
-
+import traceback
 CREDENTIALS = {
     "student1": {"password": "studpass1", "role": "Student"},
     "student2": {"password": "studpass2", "role": "Student"},
@@ -222,6 +222,17 @@ def face_verification_page():
     )
 
     class VideoTransformer(VideoTransformerBase):
+        def __init__(self):
+            print("VideoTransformer initialized")
+        
+        def recv(self, frame):
+            try:
+                return frame
+            except Exception as e:
+                st.error(f"Error in recv: {e}")
+                st.code(traceback.format_exc())
+                return frame
+        
         def transform(self, frame):
             # Convert the frame to a numpy array
             img = frame.to_ndarray(format="bgr24")
