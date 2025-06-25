@@ -189,13 +189,10 @@ def verify_page():
     # --- Step 2: Location Verification ---
     st.subheader("Step 2: Location Verification")
     st.warning(
-        "**Disclaimer:** This method uses IP Geolocation. It checks the city of your "
-        "Internet provider, which may be many kilometers away from your actual physical location. "
-        "It is not accurate enough to verify if you are on campus."
+        "Please ensure you are on campus and have enabled location services in your browser."
     )
     
     if st.button("Verify My Location"):
-        st.subheader("Step 2: Location Verification")
         location = streamlit_geolocation() # This widget will ask for permission
 
         if location:
