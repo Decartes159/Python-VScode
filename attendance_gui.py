@@ -233,18 +233,9 @@ def face_verification_page():
                 st.code(traceback.format_exc())
                 return frame
         
-        def transform(self, frame):
-            # Convert the frame to a numpy array
-            img = frame.to_ndarray(format="bgr24")
-
-        # Perform a simple operation (vertical flip)
-            img = img[::-1, :, :]
-
-        # Convert back to a VideoFrame and return
-            return av.VideoFrame.from_ndarray(img, format="bgr24")
 
     webrtc_streamer(
-        key="example",
+        key="debug stream",
         video_transformer_factory=VideoTransformer,
         rtc_configuration=RTC_CONFIGURATION, # Add this config
         media_stream_constraints={"video": True, "audio": False} # Specify you only want video
