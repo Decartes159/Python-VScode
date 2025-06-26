@@ -212,11 +212,11 @@ def add_student_page():
 
                 if all_ok:
                     for entry in temp_data:
-                        password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+                        password = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
                         st.session_state.preview_data.append({
                             "PhotoName": entry["file"].name,
                             "Name": entry["name"],
-                            "Password": f"{entry['name']}1",
+                            "Password": password, 
                             "File": entry["file"]
                         })
                     st.session_state.page = "confirm_student"
