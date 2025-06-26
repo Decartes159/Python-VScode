@@ -187,23 +187,22 @@ def verify_page():
     st.warning(
         "Please ensure you are on campus and have enabled location services in your browser."
     )
-
+    location = streamlit_geolocation() # This widget will ask for permission
     if st.button("Verify My Location"):  
-        location = streamlit_geolocation() # This widget will ask for permission
-
-    if location and 'latitude' in location and 'longitude' in location:
-        st.write(f"Your coordinates are {location['latitude']}, {location['longitude']}")
-        user_location = (location['latitude'], location['longitude'])
-        TARGET_LOCATION = (2.830973,101.703846) # XMUM Campus A3
-        ALLOWED_DISTANCE_METERS = 1000 # Can be much smaller now!
-        distance = calculate_distance(user_location, TARGET_LOCATION)
-        if distance <= ALLOWED_DISTANCE_METERS:
-            st.success("Location Verified! You are on campus.")
-            st.session_state['location_verified'] = True
+    
+        if location and 'latitude' in location and 'longitude' in location:
+            st.write(f"Your coordinates are {location['latitude']}, {location['longitude']}")
+            user_location = (location['latitude'], location['longitude'])
+            TARGET_LOCATION = (2.830973,101.703846) # XMUM Campus A3
+            ALLOWED_DISTANCE_METERS = 1000 # Can be much smaller now!
+            distance = calculate_distance(user_location, TARGET_LOCATION)
+            if distance <= ALLOWED_DISTANCE_METERS:
+                st.success("Location Verified! You are on campus.")
+                st.session_state['location_verified'] = True
+            else:
+                st.error(f"Location Check Failed. You are {distance:.2f} meters away from campus.")
         else:
-            st.error(f"Location Check Failed. You are {distance:.2f} meters away from campus.")
-    else:
-        st.error("Location verification failed. Please ensure you have allowed location access in your browser settings.")
+            st.error("Location verification failed. Please ensure you have allowed location access in your browser settings.")
 ##########
     st.divider()
     st.markdown("### Verification Checklist")
