@@ -165,6 +165,7 @@ def save_attendance(username, selected_class):
 # Verification Page (students)
 # Verification Page (students) - CORRECTED FOR KEY ERROR
 # Verification Page (students) - FINAL STABLE VERSION
+# Verification Page (students) - FINAL CORRECTED VERSION
 def verify_page():
     st.title("Attendance Process")
     st.divider()
@@ -192,17 +193,13 @@ def verify_page():
         "Please enable location services in your browser to proceed."
     )
 
-    # This button's only job is to turn on location processing mode.
     if st.button("Get & Verify My Location"):
-        # We only need to set this to True. The widget will appear on the next run.
         st.session_state['location_processing'] = True
 
-    # --- This block now handles the widget and processing cleanly ---
     if st.session_state.get('location_processing'):
-        location_data = streamlit_geolocation(key="location_retriever")
+        # THIS IS THE CORRECTED LINE: The 'key' argument has been removed.
+        location_data = streamlit_geolocation()
 
-        # The widget will first return None while it waits for the user.
-        # Once the user gives permission, it will return the data and trigger a rerun.
         if location_data:
             st.info(f"Location data received. Verifying distance...")
             user_location = (location_data['latitude'], location_data['longitude'])
@@ -218,13 +215,10 @@ def verify_page():
                 st.error(f"❌ Location Check Failed. You are {distance:.2f} meters away.")
                 st.session_state['location_verified'] = False
 
-            # IMPORTANT: Reset the processing flag to hide the widget and stop checking.
             st.session_state['location_processing'] = False
-            # NO st.rerun() HERE! Let Streamlit update the page naturally.
+            st.rerun() # Add a rerun here to immediately update the checklist and hide the widget
         else:
-            # This message will show while the component is waiting for the browser/user.
             st.info("Awaiting location permission from your browser...")
-
 
     st.divider()
     st.markdown("### Verification Checklist")
