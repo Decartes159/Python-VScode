@@ -164,6 +164,7 @@ def save_attendance(username, selected_class):
 
 # Verification Page (students)
 # Verification Page (students) - CORRECTED FOR KEY ERROR
+# Verification Page (students) - FINAL STABLE VERSION
 def verify_page():
     st.title("Attendance Process")
     st.divider()
@@ -173,9 +174,8 @@ def verify_page():
         st.session_state['face_verified'] = False
     if 'location_verified' not in st.session_state:
         st.session_state['location_verified'] = False
-    # This new state will control when we show the location widget
-    if 'checking_location' not in st.session_state:
-        st.session_state['checking_location'] = False
+    if 'location_processing' not in st.session_state:
+        st.session_state['location_processing'] = False
 
     selected_class = st.session_state.get("selected_class", "N/A")
     st.markdown(f"Class: **{selected_class}**")
@@ -189,37 +189,41 @@ def verify_page():
     # --- Step 2: Location Verification ---
     st.subheader("Step 2: Location Verification")
     st.warning(
-        "Please ensure you are on campus and have enabled location services in your browser."
+        "Please enable location services in your browser to proceed."
     )
-    
-    # This button will now just set the state, not call the widget
-    if st.button("Get My Location"):  
-        st.session_state['checking_location'] = True
 
-    # --- NEW LOGIC: Only render the widget if we are in the 'checking_location' state ---
-    if st.session_state.get('checking_location', False):
-        st.info("Getting location data... Please approve the request in your browser.")
-        location_data = streamlit_geolocation() # The widget is now safely isolated
+    # This button's only job is to turn on location processing mode.
+    if st.button("Get & Verify My Location"):
+        # We only need to set this to True. The widget will appear on the next run.
+        st.session_state['location_processing'] = True
 
-        if location_data and 'latitude' in location_data:
+    # --- This block now handles the widget and processing cleanly ---
+    if st.session_state.get('location_processing'):
+        location_data = streamlit_geolocation(key="location_retriever")
+
+        # The widget will first return None while it waits for the user.
+        # Once the user gives permission, it will return the data and trigger a rerun.
+        if location_data:
+            st.info(f"Location data received. Verifying distance...")
             user_location = (location_data['latitude'], location_data['longitude'])
             TARGET_LOCATION = (2.830973, 101.703846) # XMUM Campus A3
             ALLOWED_DISTANCE_METERS = 1000
 
             distance = calculate_distance(user_location, TARGET_LOCATION)
-            
+
             if distance <= ALLOWED_DISTANCE_METERS:
-                st.success(f"Location Verified! You are on campus ({distance:.2f} meters away).")
+                st.success(f"✅ Location Verified! You are {distance:.2f} meters away from the target.")
                 st.session_state['location_verified'] = True
             else:
-                st.error(f"Location Check Failed. You are {distance:.2f} meters away from the target location.")
+                st.error(f"❌ Location Check Failed. You are {distance:.2f} meters away.")
                 st.session_state['location_verified'] = False
-            
-            # IMPORTANT: Reset the state so the widget disappears after we are done with it
-            st.session_state['checking_location'] = False
-            st.rerun() # Rerun to update the checklist display immediately
+
+            # IMPORTANT: Reset the processing flag to hide the widget and stop checking.
+            st.session_state['location_processing'] = False
+            # NO st.rerun() HERE! Let Streamlit update the page naturally.
         else:
-            st.warning("Could not retrieve location. Please make sure you have granted permission.")
+            # This message will show while the component is waiting for the browser/user.
+            st.info("Awaiting location permission from your browser...")
 
 
     st.divider()
@@ -228,6 +232,7 @@ def verify_page():
     st.checkbox("Face Verified", value=st.session_state.get('face_verified', False), disabled=True)
     st.checkbox("Location Verified", value=st.session_state.get('location_verified', False), disabled=True)
 
+    # This logic for submitting remains the same
     if st.session_state.get('face_verified') and st.session_state.get('location_verified'):
         if st.button("Submit Attendance"):
             save_attendance(
