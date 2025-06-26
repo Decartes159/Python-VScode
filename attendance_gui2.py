@@ -340,12 +340,9 @@ def verify_page():
 
     # --- Initialize session state variables ---
     if 'face_verified' not in st.session_state:
-        st.session_state['face_verified'] = False
+        st.session_state['face_verified'] = False # You will need to set this to True from your face_verification_page
     if 'location_verified' not in st.session_state:
         st.session_state['location_verified'] = False
-    # This new state will control when we show the location widget
-    if 'checking_location' not in st.session_state:
-        st.session_state['checking_location'] = False
 
     selected_class = st.session_state.get("selected_class", "N/A")
     st.markdown(f"Class: **{selected_class}**")
@@ -361,37 +358,23 @@ def verify_page():
     st.warning(
         "Please ensure you are on campus and have enabled location services in your browser."
     )
+    location = streamlit_geolocation() # This widget will ask for permission
+    if st.button("Verify My Location"):  
     
-    # This button will now just set the state, not call the widget
-    if st.button("Get My Location"):  
-        st.session_state['checking_location'] = True
-
-    # --- NEW LOGIC: Only render the widget if we are in the 'checking_location' state ---
-    if st.session_state.get('checking_location', False):
-        st.info("Getting location data... Please approve the request in your browser.")
-        location_data = streamlit_geolocation() # The widget is now safely isolated
-
-        if location_data and 'latitude' in location_data:
-            user_location = (location_data['latitude'], location_data['longitude'])
-            TARGET_LOCATION = (2.830973, 101.703846) # XMUM Campus A3
-            ALLOWED_DISTANCE_METERS = 1000
-
+        if location and 'latitude' in location and 'longitude' in location:
+            st.write(f"Your coordinates are {location['latitude']}, {location['longitude']}")
+            user_location = (location['latitude'], location['longitude'])
+            TARGET_LOCATION = (2.830973,101.703846) # XMUM Campus A3
+            ALLOWED_DISTANCE_METERS = 1000 # Can be much smaller now!
             distance = calculate_distance(user_location, TARGET_LOCATION)
-            
             if distance <= ALLOWED_DISTANCE_METERS:
-                st.success(f"Location Verified! You are on campus ({distance:.2f} meters away).")
+                st.success("Location Verified! You are on campus.")
                 st.session_state['location_verified'] = True
             else:
-                st.error(f"Location Check Failed. You are {distance:.2f} meters away from the target location.")
-                st.session_state['location_verified'] = False
-            
-            # IMPORTANT: Reset the state so the widget disappears after we are done with it
-            st.session_state['checking_location'] = False
-            st.rerun() # Rerun to update the checklist display immediately
+                st.error(f"Location Check Failed. You are {distance:.2f} meters away from campus.")
         else:
-            st.warning("Could not retrieve location. Please make sure you have granted permission.")
-
-
+            st.error("Location verification failed. Please ensure you have allowed location access in your browser settings.")
+##########
     st.divider()
     st.markdown("### Verification Checklist")
 
