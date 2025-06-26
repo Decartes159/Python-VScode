@@ -163,20 +163,15 @@ def save_attendance(username, selected_class):
     df.to_csv(file_name, index=False)
 
 # Verification Page (students)
-# Verification Page (students) - CORRECTED FOR KEY ERROR
-# Verification Page (students) - FINAL STABLE VERSION
-# Verification Page (students) - FINAL CORRECTED VERSION
 def verify_page():
     st.title("Attendance Process")
     st.divider()
 
     # --- Initialize session state variables ---
     if 'face_verified' not in st.session_state:
-        st.session_state['face_verified'] = False
+        st.session_state['face_verified'] = False # You will need to set this to True from your face_verification_page
     if 'location_verified' not in st.session_state:
         st.session_state['location_verified'] = False
-    if 'location_processing' not in st.session_state:
-        st.session_state['location_processing'] = False
 
     selected_class = st.session_state.get("selected_class", "N/A")
     st.markdown(f"Class: **{selected_class}**")
@@ -190,43 +185,32 @@ def verify_page():
     # --- Step 2: Location Verification ---
     st.subheader("Step 2: Location Verification")
     st.warning(
-        "Please enable location services in your browser to proceed."
+        "Please ensure you are on campus and have enabled location services in your browser."
     )
 
-    if st.button("Get & Verify My Location"):
-        st.session_state['location_processing'] = True
+    if st.button("Verify My Location"):  
+        location = streamlit_geolocation() # This widget will ask for permission
 
-    if st.session_state.get('location_processing'):
-        # THIS IS THE CORRECTED LINE: The 'key' argument has been removed.
-        location_data = streamlit_geolocation()
-
-        if location_data:
-            st.info(f"Location data received. Verifying distance...")
-            user_location = (location_data['latitude'], location_data['longitude'])
-            TARGET_LOCATION = (2.830973, 101.703846) # XMUM Campus A3
-            ALLOWED_DISTANCE_METERS = 1000
-
+        if location and 'latitude' in location and 'longitude' in location:
+            st.write(f"Your coordinates are {location['latitude']}, {location['longitude']}")
+            user_location = (location['latitude'], location['longitude'])
+            TARGET_LOCATION = (2.830973,101.703846) # XMUM Campus A3
+            ALLOWED_DISTANCE_METERS = 1000 # Can be much smaller now!
             distance = calculate_distance(user_location, TARGET_LOCATION)
-
             if distance <= ALLOWED_DISTANCE_METERS:
-                st.success(f"✅ Location Verified! You are {distance:.2f} meters away from the target.")
+                st.success("Location Verified! You are on campus.")
                 st.session_state['location_verified'] = True
             else:
-                st.error(f"❌ Location Check Failed. You are {distance:.2f} meters away.")
-                st.session_state['location_verified'] = False
-
-            st.session_state['location_processing'] = False
-            st.rerun() # Add a rerun here to immediately update the checklist and hide the widget
+                st.error(f"Location Check Failed. You are {distance:.2f} meters away from campus.")
         else:
-            st.info("Awaiting location permission from your browser...")
-
+            st.error("Location verification failed. Please ensure you have allowed location access in your browser settings.")
+##########
     st.divider()
     st.markdown("### Verification Checklist")
 
     st.checkbox("Face Verified", value=st.session_state.get('face_verified', False), disabled=True)
     st.checkbox("Location Verified", value=st.session_state.get('location_verified', False), disabled=True)
 
-    # This logic for submitting remains the same
     if st.session_state.get('face_verified') and st.session_state.get('location_verified'):
         if st.button("Submit Attendance"):
             save_attendance(
