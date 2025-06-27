@@ -111,6 +111,9 @@ def login_page():
         else:
             st.error("Incorrect username, password, or role.")
 
+
+
+
 # Student Page
 def student_page():
     username = st.session_state.get("username", "Student")
@@ -134,6 +137,10 @@ def student_page():
             st.rerun()
         else:
             st.error("Please select a class.")
+
+
+
+
 
 # Lecturer Page
 def lecturer_page():
@@ -333,14 +340,13 @@ def save_attendance(username, selected_class):
     df.to_csv(file_name, index=False)
 
 # Verification Page (students)
-# Verification Page (students) - CORRECTED FOR KEY ERROR
 def verify_page():
     st.title("Attendance Process")
     st.divider()
 
     # --- Initialize session state variables ---
     if 'face_verified' not in st.session_state:
-        st.session_state['face_verified'] = False # You will need to set this to True from your face_verification_page
+        st.session_state['face_verified'] = False 
     if 'location_verified' not in st.session_state:
         st.session_state['location_verified'] = False
 
@@ -374,7 +380,6 @@ def verify_page():
                 st.error(f"Location Check Failed. You are {distance:.2f} meters away from campus.")
         else:
             st.error("Location verification failed. Please ensure you have allowed location access in your browser settings.")
-##########
     st.divider()
     st.markdown("### Verification Checklist")
 
