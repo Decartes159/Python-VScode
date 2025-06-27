@@ -137,10 +137,6 @@ def student_page():
         else:
             st.error("Please select a class.")
 
-
-
-
-
 # Lecturer Page
 def lecturer_page():
     username = st.session_state.get("username", "Lecturer")
@@ -458,7 +454,7 @@ def face_verification_page():
             st.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption="Verification Image")
 
             # --- THE CRITICAL VERIFICATION CHECK ---
-            CONFIDENCE_THRESHOLD = 0.80 # 80% confidence required
+            CONFIDENCE_THRESHOLD = 0.70 # 80% confidence required
 
             st.write(f"Detected: `{recognized_name}` with {probability:.2%} confidence.")
             st.write(f"Logged In As: `{logged_in_user}`")
