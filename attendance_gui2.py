@@ -48,7 +48,6 @@ def save_credentials(updated_credentials):
 def load_models():
     """Loads all necessary models for face recognition."""
     try:
-        # NOTE: Ensure these paths are correct in your project structure
         model_path = "facenet_model/20180402-114759.pb"
         classifier_path = "trained_model/classifier.joblib"
         encoder_path = "trained_model/label_encoder.joblib"
